@@ -1,0 +1,512 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/settingLayout">
+
+    <include
+        android:id="@+id/include"
+        layout="@layout/layout_title_bar_normal" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="45dp">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:paddingBottom="60.0dip"
+            android:paddingLeft="10.0dip"
+            android:paddingRight="10.0dip"
+            android:paddingTop="10.0dip">
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10.0dip"
+                android:layout_marginTop="10.0dip"
+                android:gravity="center_vertical"
+                android:paddingLeft="4.0dip"
+                android:text="账户设置"
+                android:textColor="#ff888888"
+                android:textSize="16.0sp" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent">
+
+                <TableLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:shrinkColumns="0"
+                    android:stretchColumns="0">
+
+                    <TableRow
+                        android:id="@+id/more_page_row0"
+                        android:layout_width="fill_parent"
+                        android:layout_height="20dp"
+                        android:layout_marginLeft="2.0dip"
+                        android:layout_marginRight="2.0dip"
+                        android:background="@drawable/editor_top"
+                        android:minHeight="80dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_column="0"
+                            android:layout_weight="9"
+                            android:drawablePadding="10.0dip"
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
+                            android:paddingLeft="17.0dip"
+                            android:paddingTop="20dip"
+                            android:text="账户头像"
+                            android:textColor="#ff333333"
+                            android:textSize="16.0sp" />
+
+                        <com.example.lele.protoui.CircleImg
+                            android:id="@+id/setting_user_protrait"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_column="1"
+                            android:layout_gravity="left"
+                            android:layout_marginRight="50dp"
+                            android:layout_weight="5"
+                            android:foregroundGravity="left"
+                            android:src="@drawable/user" />
+
+                        <ImageView
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:layout_column="2"
+                            android:layout_gravity="right"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:src="@drawable/arrow_forward_7f8c8d" />
+                    </TableRow>
+
+                    <TableRow
+                        android:id="@+id/more_page_row1"
+                        android:layout_width="fill_parent"
+                        android:layout_marginLeft="2.0dip"
+                        android:layout_marginRight="2.0dip"
+                        android:background="@drawable/editor_mid"
+                        android:paddingBottom="15.0dip"
+                        android:paddingTop="15.0dip"
+                        android:minHeight="50dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:layout_column="0"
+                            android:layout_weight="9"
+                            android:drawablePadding="10.0dip"
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
+                            android:paddingLeft="17.0dip"
+                            android:text="登陆名"
+                            android:textColor="#ff333333"
+                            android:textSize="16.0sp" />
+
+                        <TextView
+                            android:id="@+id/setting_uname"
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:layout_column="1"
+                            android:layout_gravity="left"
+                            android:layout_weight="6"
+                            android:gravity="left"
+                            android:includeFontPadding="false"
+                            android:textColor="#ff333333"
+                            android:textSize="16.0sp" />
+
+                    </TableRow>
+
+                    <TableRow
+                        android:id="@+id/more_page_row2"
+                        android:layout_width="fill_parent"
+                        android:layout_marginLeft="2.0dip"
+                        android:layout_marginRight="2.0dip"
+                        android:background="@drawable/editor_mid"
+                        android:paddingBottom="15.0dip"
+                        android:paddingTop="15.0dip"
+                        android:minHeight="50dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_column="0"
+                            android:layout_weight="9"
+                            android:drawablePadding="10.0dip"
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
+                            android:paddingLeft="17.0dip"
+                            android:text="账户昵称"
+                            android:textColor="#ff333333"
+                            android:textSize="16.0sp" />
+
+                        <TextView
+                            android:id="@+id/setting_nickname"
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:layout_column="1"
+                            android:layout_weight="5"
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
+                            android:textColor="#ff333333"
+                            android:textSize="16.0sp" />
+
+                        <ImageView
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:layout_column="2"
+                            android:layout_gravity="right"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:src="@drawable/arrow_forward_7f8c8d" />
+                    </TableRow>
+
+                    <TableRow
+                        android:id="@+id/more_page_row3"
+                        android:layout_width="fill_parent"
+                        android:layout_marginLeft="2.0dip"
+                        android:layout_marginRight="2.0dip"
+                        android:background="@drawable/editor_bottom"
+                        android:paddingBottom="15.0dip"
+                        android:paddingTop="15.0dip"
+                        android:minHeight="50dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_column="0"
+                            android:layout_weight="9"
+                            android:drawablePadding="10.0dip"
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
+                            android:paddingLeft="17.0dip"
+                            android:text="性别"
+                            android:textColor="#ff333333"
+                            android:textSize="16.0sp" />
+
+                        <TextView
+                            android:id="@+id/setting_sex"
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:layout_column="1"
+                            android:layout_weight="5"
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
+                            android:textColor="#ff333333"
+                            android:textSize="16.0sp" />
+
+                        <ImageView
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:layout_column="2"
+                            android:layout_gravity="right"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:src="@drawable/arrow_forward_7f8c8d" />
+                    </TableRow>
+
+                </TableLayout>
+
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10.0dip"
+                android:layout_marginTop="10.0dip"
+                android:gravity="center_vertical"
+                android:paddingLeft="4.0dip"
+                android:text="偏好设置"
+                android:textColor="#ff888888"
+                android:textSize="16.0sp" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent">
+
+                <TableLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:shrinkColumns="0"
+                    android:stretchColumns="0">
+
+                    <TableRow
+                        android:id="@+id/more_page_row4"
+                        android:layout_width="fill_parent"
+                        android:layout_marginLeft="2.0dip"
+                        android:layout_marginRight="2.0dip"
+                        android:background="@drawable/editor_top"
+                        android:paddingBottom="15.0dip"
+                        android:paddingTop="15.0dip"
+                        android:minHeight="50dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_column="0"
+                            android:layout_weight="9"
+                            android:drawablePadding="10.0dip"
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
+                            android:paddingLeft="17.0dip"
+                            android:text="@string/setting_clt_len"
+                            android:textColor="#ff333333"
+                            android:textSize="16.0sp" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:layout_column="1"
+                            android:layout_weight="5"
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
+                            android:textColor="#ff333333"
+                            android:textSize="16.0sp"
+                            android:id="@+id/setting_clt_len" />
+
+                        <ImageView
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:layout_column="2"
+                            android:layout_gravity="right"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:src="@drawable/arrow_forward_7f8c8d" />
+                    </TableRow>
+
+                    <TableRow
+                        android:id="@+id/more_page_row5"
+                        android:layout_width="fill_parent"
+                        android:layout_marginLeft="2.0dip"
+                        android:layout_marginRight="2.0dip"
+                        android:background="@drawable/editor_mid"
+                        android:paddingBottom="15.0dip"
+                        android:paddingTop="15.0dip"
+                        android:minHeight="50dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_column="0"
+                            android:layout_weight="9"
+                            android:drawablePadding="10.0dip"
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
+                            android:paddingLeft="17.0dip"
+                            android:text="@string/setting_sle_len"
+                            android:textColor="#ff333333"
+                            android:textSize="16.0sp" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:layout_column="1"
+                            android:layout_weight="5"
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
+                            android:textColor="#ff333333"
+                            android:textSize="16.0sp"
+                            android:id="@+id/setting_sle_len" />
+
+                        <ImageView
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:layout_column="2"
+                            android:layout_gravity="right"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:src="@drawable/arrow_forward_7f8c8d" />
+                    </TableRow>
+
+                    <TableRow
+                        android:id="@+id/more_page_row6"
+                        android:layout_width="fill_parent"
+                        android:layout_marginLeft="2.0dip"
+                        android:layout_marginRight="2.0dip"
+                        android:background="@drawable/editor_mid"
+                        android:paddingBottom="15.0dip"
+                        android:paddingTop="15.0dip"
+                        android:minHeight="50dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_column="0"
+                            android:layout_weight="9"
+                            android:drawablePadding="10.0dip"
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
+                            android:paddingLeft="17.0dip"
+                            android:text="@string/setting_clt_tight"
+                            android:textColor="#ff333333"
+                            android:textSize="16.0sp" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:layout_column="1"
+                            android:layout_weight="5"
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
+                            android:textColor="#ff333333"
+                            android:textSize="16.0sp"
+                            android:id="@+id/setting_clt_tight" />
+
+                        <ImageView
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:layout_column="2"
+                            android:layout_gravity="right"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:src="@drawable/arrow_forward_7f8c8d" />
+                    </TableRow>
+
+                    <TableRow
+                        android:id="@+id/more_page_row7"
+                        android:layout_width="fill_parent"
+                        android:layout_marginLeft="2.0dip"
+                        android:layout_marginRight="2.0dip"
+                        android:background="@drawable/editor_mid"
+                        android:paddingBottom="15.0dip"
+                        android:paddingTop="15.0dip"
+                        android:minHeight="50dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_column="0"
+                            android:layout_weight="9"
+                            android:drawablePadding="10.0dip"
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
+                            android:paddingLeft="17.0dip"
+                            android:text="@string/setting_nckl_shp"
+                            android:textColor="#ff333333"
+                            android:textSize="16.0sp" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:layout_column="1"
+                            android:layout_weight="5"
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
+                            android:textColor="#ff333333"
+                            android:textSize="16.0sp"
+                            android:id="@+id/setting_nckl_shp" />
+
+                        <ImageView
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:layout_column="2"
+                            android:layout_gravity="right"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:src="@drawable/arrow_forward_7f8c8d" />
+                    </TableRow>
+
+                    <TableRow
+                        android:id="@+id/more_page_row8"
+                        android:layout_width="fill_parent"
+                        android:layout_marginLeft="2.0dip"
+                        android:layout_marginRight="2.0dip"
+                        android:background="@drawable/editor_mid"
+                        android:paddingBottom="15.0dip"
+                        android:paddingTop="15.0dip"
+                        android:minHeight="50dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_column="0"
+                            android:layout_weight="9"
+                            android:drawablePadding="10.0dip"
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
+                            android:paddingLeft="17.0dip"
+                            android:text="@string/setting_stmp_sty"
+                            android:textColor="#ff333333"
+                            android:textSize="16.0sp" />
+
+                        <TextView
+                            android:id="@+id/setting_stmp_sty"
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:layout_column="1"
+                            android:layout_weight="5"
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
+                            android:textColor="#ff333333"
+                            android:textSize="16.0sp" />
+
+                        <ImageView
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:layout_column="2"
+                            android:layout_gravity="right"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:src="@drawable/arrow_forward_7f8c8d" />
+                    </TableRow>
+
+                    <TableRow
+                        android:id="@+id/more_page_row9"
+                        android:layout_width="fill_parent"
+                        android:layout_marginLeft="2.0dip"
+                        android:layout_marginRight="2.0dip"
+                        android:background="@drawable/editor_bottom"
+                        android:paddingBottom="15.0dip"
+                        android:paddingTop="15.0dip"
+                        android:minHeight="50dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_column="0"
+                            android:layout_weight="9"
+                            android:drawablePadding="10.0dip"
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
+                            android:paddingLeft="17.0dip"
+                            android:text="@string/setting_prf_color"
+                            android:textColor="#ff333333"
+                            android:textSize="16.0sp" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:layout_column="1"
+                            android:layout_weight="5"
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
+                            android:textColor="#ff333333"
+                            android:textSize="16.0sp"
+                            android:id="@+id/setting_prf_color" />
+
+                        <ImageView
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:layout_column="2"
+                            android:layout_gravity="right"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:src="@drawable/arrow_forward_7f8c8d" />
+                    </TableRow>
+
+                </TableLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_camera"
+            android:icon="@drawable/camera_2a2a2a"
+            android:title="拍一拍" />
+        <item
+            android:id="@+id/nav_setting"
+            android:icon="@drawable/setting_2a2a2a"
+            android:title="偏好设置" />
+        <item
+            android:id="@+id/nav_level"
+            android:icon="@drawable/level_2a2a2a"
+            android:title="时尚等级" />
+    </group>
+
+    <item android:title="">
+        <menu>
+            <item
+                android:id="@+id/nav_help"
+                android:icon="@drawable/help_2a2a2a"
+                android:title="帮助" />
+            <item
+                android:id="@+id/nav_exit"
+                android:icon="@drawable/exit_2a2a2a"
+                android:title="退出" />
+        </menu>
+    </item>
+</menu>
