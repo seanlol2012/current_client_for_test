@@ -70,7 +70,10 @@ public class LoginActivity extends AppCompatActivity {
                 String s = (String) msg.obj;
                 //Toast.makeText(LoginActivity.this,s,Toast.LENGTH_LONG).show();
                 if (s.contains("log in")) {
+                    Bundle bundle_toMain = new Bundle();
+                    bundle_toMain.putString("userName",uname);
                     Intent i = new Intent(LoginActivity.this, MainActivity.class);
+                    i.putExtras(bundle_toMain);
                     startActivity(i);
                 } else {
                     //密码错误

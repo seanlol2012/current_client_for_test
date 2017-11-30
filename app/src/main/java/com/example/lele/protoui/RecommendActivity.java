@@ -10,7 +10,10 @@ import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
@@ -26,6 +29,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RecommendActivity extends AppCompatActivity {
 
@@ -49,23 +54,42 @@ public class RecommendActivity extends AppCompatActivity {
     private SurfaceView surfaceView;/* 显示拍摄界面 */
     Bundle bundle = null; /* 声明一个Bundle对象，用来存储数据 */
     //上传图片
-    private static String requestURL = "UploadPicServlet";
+    private static String requestURL_getpic = "http://192.168.1.66:8080/fashion_server/getpic";
     String pic_uri;/* 图片uri */
+
+    //private Handler handler = new Handler() {
+    //    @Override
+    //    public void handleMessage(Message msg) {
+    //        //输入检查
+    //        if (msg.what == 204) {
+    //            try {
+    //                if (mPhotoFile != null) {
+    //                    final Map<String, File> files = new HashMap<String, File>();
+    //                    files.put("uploadfile", mPhotoFile);
+    //                    final String response = UploadUtil.uploadpic(requestURL_getpic, files);
+    //                    Log.v("RecommendAct",response);
+    //                }
+    //            } catch (Exception e) {
+    //                e.printStackTrace();
+    //            }
+    //        }
+    //    }
+    //};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recommend);
 
-        barTitle = (TextView) findViewById(R.id.title_bar_name);
+        barTitle = findViewById(R.id.title_bar_name);
         barTitle.setText(R.string.barTitle_recmd);
-        recmd_txt1 = (TextView) findViewById(R.id.recmd_txt1);
-        recmd_txt2 = (TextView) findViewById(R.id.recmd_txt2);
-        recmd_txt_tryagain = (TextView) findViewById(R.id.recmd_txt_tryagain);
-        tryagain = (ImageView) findViewById(R.id.recmd_tryagain);
+        recmd_txt1 = findViewById(R.id.recmd_txt1);
+        recmd_txt2 = findViewById(R.id.recmd_txt2);
+        recmd_txt_tryagain = findViewById(R.id.recmd_txt_tryagain);
+        tryagain = findViewById(R.id.recmd_tryagain);
 
         //返回--------------------------------------------------------------------------------------
-        backBtn = (ImageView) findViewById(R.id.title_bar_back_btn);
+        backBtn = findViewById(R.id.title_bar_back_btn);
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,20 +97,32 @@ public class RecommendActivity extends AppCompatActivity {
             }
         });
 
-        upLoadfromCamera = (ImageView) findViewById(R.id.recmd_upload1_btn);
-        upLoadfromAlbum = (ImageView) findViewById(R.id.recmd_upload2_btn);
-        tryagain = (ImageView) findViewById(R.id.recmd_tryagain);
-        mImageView = (ImageView) findViewById(R.id.mImageView);
+        upLoadfromCamera = findViewById(R.id.recmd_upload1_btn);
+        upLoadfromAlbum = findViewById(R.id.recmd_upload2_btn);
+        tryagain = findViewById(R.id.recmd_tryagain);
+        mImageView = findViewById(R.id.mImageView);
         setCameraListener();
         setAlbumListener();
 
         //拍摄界面----------------------------------------------------------------------------------
-        surfaceView = (SurfaceView) findViewById(R.id.surfaceView);
-        surfaceView.getHolder()
-                .setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        surfaceView = findViewById(R.id.surfaceView);
+        surfaceView.getHolder().setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         surfaceView.getHolder().setFixedSize(800, 600); //设置Surface分辨率
         surfaceView.getHolder().setKeepScreenOn(true);// 屏幕常亮
         surfaceView.getHolder().addCallback(new SurfaceCallback());//为SurfaceView的句柄添加一个回调函数
+    }
+
+    protected void setCameraListener() {
+        upLoadfromCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    camera.takePicture(null, null, new MyPictureCallback());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     protected void setAlbumListener() {
@@ -115,19 +151,6 @@ public class RecommendActivity extends AppCompatActivity {
         });
     }
 
-    protected void setCameraListener() {
-        upLoadfromCamera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    camera.takePicture(null, null, new MyPictureCallback());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-
     private final class MyPictureCallback implements Camera.PictureCallback {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
@@ -137,26 +160,36 @@ public class RecommendActivity extends AppCompatActivity {
                 bundle.putByteArray("bytes", data);
                 // 保存图片到sd卡中
                 File fileFolder = new File(getSDPath() + "/ProtoUI/");
-                if (!fileFolder.exists()) {
-                    fileFolder.mkdir();
+                boolean isDirectoryCreated = fileFolder.exists();
+                if (!isDirectoryCreated) {
+                    isDirectoryCreated = fileFolder.mkdir();
                 }
-                mPhotoFile = new File(fileFolder, getPhotoFileName());
-                mPhotoPath = getSDPath() + "/" + getPhotoFileName();
+                String photo_name = getPhotoFileName();
+                mPhotoFile = new File(fileFolder, photo_name);
+                mPhotoPath = getSDPath() + "/ProtoUI/" + photo_name;
                 FileOutputStream outputStream = new FileOutputStream(mPhotoFile);
                 outputStream.write(data);
                 outputStream.close();
-//                //开启线程上传图片
-//                new Thread((Runnable) () -> {
-//                    try {
-//                        if (mPhotoFile != null) {
-//                            String request = UploadUtil.uploadFile(mPhotoFile, "UploadPicServlet");
-//                        }
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                });
-                Toast.makeText(getApplicationContext(), R.string.msg_takephotot,
-                        Toast.LENGTH_SHORT).show();
+
+                //Message msg = Message.obtain();
+                //msg.what = 204;
+                //handler.sendMessage(msg);
+
+                //开启线程上传图片
+                new Thread((Runnable) () -> {
+                    try {
+                        if (mPhotoFile != null) {
+                            final Map<String, File> files = new HashMap<String, File>();
+                            files.put("uploadfile", mPhotoFile);
+                            final String response = UploadUtil.uploadpic(requestURL_getpic, files);
+                            Log.v("RecommendAct",response);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+
+                Toast.makeText(getApplicationContext(), R.string.msg_takephotot, Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -179,9 +212,12 @@ public class RecommendActivity extends AppCompatActivity {
     }
 
     private String getPhotoFileName() {
-        Date date = new Date(System.currentTimeMillis());
-        SimpleDateFormat dateFormat = new SimpleDateFormat("'IMG'_yyyyMMdd_HHmmss");
-        return dateFormat.format(date) + ".jpg";
+        //Date date = new Date(System.currentTimeMillis());
+        //SimpleDateFormat dateFormat = new SimpleDateFormat("'IMG'_yyyyMMdd_HHmmss");
+        //return dateFormat.format(date) + ".jpg";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
+        Date date = new Date();
+        return sdf.format(date) + ".jpg";
     }
 
     private void Recommend(byte[] data) {

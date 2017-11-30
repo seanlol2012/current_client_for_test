@@ -30,15 +30,6 @@
         android:textColor="#ffffff"
         android:textSize="22sp" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="StateTest"
-        android:id="@+id/textView2"
-        android:layout_centerVertical="true"
-        android:layout_alignStart="@+id/title_bar_name"
-        android:layout_alignLeft="@+id/title_bar_name"/>
-
     <ImageView
         android:id="@+id/title_bar_tag_btn"
         android:layout_width="40dp"

@@ -50,8 +50,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ListView mListView;
     private SimpleAdapter mSimpleAdapter;
     private ArrayList<HashMap<String, Object>> listItem;
-    private ArrayList<HashMap<String, String>> listClothInfo;
-    public TextView maintext;
+    //public TextView maintext;
     private int mBackKeyPressedTimes = 0;
     //侧栏头像操作
     private ImageView main_avator;
@@ -64,14 +63,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private int dynamicFlag = 0;
     private int picIndex = 0;
-    private String userName = "wang";
+    private String userName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.side_menu);
 
-        maintext = findViewById(R.id.textView2);
+        //maintext = findViewById(R.id.textView2);
         ImageView menuImg = findViewById(R.id.title_bar_menu_btn);
         final ImageView tagImg = findViewById(R.id.title_bar_tag_btn);
         final DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -80,6 +79,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView nav_view = findViewById(R.id.nav_view);
         nav_view.setItemTextColor(null);
         nav_view.setItemIconTintList(null);
+
+        //获取上一页面传递的用户名信息
+        Bundle bundle_fromLogin = this.getIntent().getExtras();
+        userName = bundle_fromLogin.getString("userName");
 
         //侧栏监听
         menuImg.setOnClickListener(new View.OnClickListener() {
@@ -136,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
                 String msg;
                 msg = arg2 + "selected";
-                maintext.setText(msg);
+                //maintext.setText(msg);
                 //if (arg2 == 1) {
                 //   Intent i = new Intent(MainActivity.this, ClothInfoActivity.class);
                 //   startActivity(i);
@@ -196,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void run() {
                 Map<String, String> map = new HashMap<String, String>();
                 //post方法向服务器传入用户名与索引
-                map.put("username", "wang");
+                map.put("username", userName);
                 map.put("index",String.valueOf(index));
 
                 try{
@@ -278,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void run() {
                 Map<String, String> map = new HashMap<String, String>();
                 //post方法向服务器传入用户名与索引，暂时设定取10张图片
-                map.put("username", "wang");
+                map.put("username", userName);
                 map.put("index","0");
                 Message msg = Message.obtain();
                 Bitmap[] bm=new Bitmap[10];
@@ -323,12 +326,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         // 获得服务器响应结果和状态码
                         int responseCode = urlConnection.getResponseCode();
                         if (responseCode == 200) {
-                            // 取回响应的结果
-                            //msg.obj=changeInputStream(urlConnection.getInputStream(), "UTF-8");
                             Bitmap bitmap = BitmapFactory.decodeStream(urlConnection.getInputStream());
                             bm[i]=bitmap;
-                            //msg.obj=bitmap;
-                            //handler.sendMessage(msg);
                         }
                     }catch (IOException e) {
                         e.printStackTrace();
@@ -394,17 +393,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 String[] attr_value = s.split(",");
 
                 Intent i = new Intent(MainActivity.this, ClothInfoActivity.class);
-                Bundle bundle = new Bundle();
+                Bundle bundle_toClothInfo = new Bundle();
 
                 if(dynamicFlag != 1) {
                     picIndex = picIndex + 5;
                 }
 
-                bundle.putString("picIndex",String.valueOf(picIndex));
-                bundle.putString("userName",userName);
-                bundle.putStringArray("clothingInfo",attr_value);
+                bundle_toClothInfo.putString("picIndex",String.valueOf(picIndex));
+                bundle_toClothInfo.putString("userName",userName);
+                bundle_toClothInfo.putStringArray("clothingInfo",attr_value);
 
-                i.putExtras(bundle);
+                i.putExtras(bundle_toClothInfo);
                 startActivity(i);
             }
         }
@@ -493,7 +492,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         topPopWindow.showAsDropDown(imgView, 0, 0);
         int[] arr = new int[2];
         arr = topPopWindow.getTagInfo();
-        maintext.setText("Year:" + arr[0] + "Season" + arr[1]);
+        //maintext.setText("Year:" + arr[0] + "Season" + arr[1]);
     }
 
     private void setPicToView() {
