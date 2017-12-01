@@ -5,15 +5,13 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
@@ -27,6 +25,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -158,6 +157,13 @@ public class RecommendActivity extends AppCompatActivity {
                 //获得图片
                 bundle = new Bundle();
                 bundle.putByteArray("bytes", data);
+
+                //将图片顺时针旋转90度
+                Bitmap bitmap_cc = BitmapFactory.decodeByteArray(data,0,data.length);
+                Matrix mx = new Matrix();
+                mx.setRotate(90,(float)bitmap_cc.getWidth()/2,(float)bitmap_cc.getHeight()/2);
+                final Bitmap bm = Bitmap.createBitmap(bitmap_cc,0,0,bitmap_cc.getWidth(),bitmap_cc.getHeight(),mx,true);
+
                 // 保存图片到sd卡中
                 File fileFolder = new File(getSDPath() + "/ProtoUI/");
                 boolean isDirectoryCreated = fileFolder.exists();
@@ -167,37 +173,60 @@ public class RecommendActivity extends AppCompatActivity {
                 String photo_name = getPhotoFileName();
                 mPhotoFile = new File(fileFolder, photo_name);
                 mPhotoPath = getSDPath() + "/ProtoUI/" + photo_name;
-                FileOutputStream outputStream = new FileOutputStream(mPhotoFile);
-                outputStream.write(data);
-                outputStream.close();
+
+                try{
+                    FileOutputStream outputStream = new FileOutputStream(mPhotoFile);
+                    //outputStream.write(data);
+                    bm.compress(Bitmap.CompressFormat.JPEG,100,outputStream);
+                    outputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
 
                 //Message msg = Message.obtain();
                 //msg.what = 204;
                 //handler.sendMessage(msg);
 
-                //开启线程上传图片
-                new Thread((Runnable) () -> {
-                    try {
-                        if (mPhotoFile != null) {
-                            final Map<String, File> files = new HashMap<String, File>();
-                            files.put("uploadfile", mPhotoFile);
-                            final String response = UploadUtil.uploadpic(requestURL_getpic, files);
-                            Log.v("RecommendAct",response);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                });
-
                 Toast.makeText(getApplicationContext(), R.string.msg_takephotot, Toast.LENGTH_SHORT).show();
+
+                //开启线程上传图片
+                new upload_pic().start();
+                //new Thread((Runnable) () -> {
+                //    try {
+                //        if (mPhotoFile != null) {
+                //            final Map<String, File> files = new HashMap<String, File>();
+                //            files.put("uploadfile", mPhotoFile);
+                //            final String response = UploadUtil.uploadpic(requestURL_getpic, files);
+                //            //Log.v("RecommendAct",response);
+                //        }
+                //    } catch (Exception e) {
+                //        e.printStackTrace();
+                //    }
+                //});
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
+                //手机画面定格
                 camera.stopPreview();
                 //保存图片后发送广播通知更新数据库
                 Uri uri = Uri.fromFile(mPhotoFile);
                 sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
                 Recommend(data);
+            }
+        }
+    }
+
+    private class upload_pic extends Thread {
+        public void run() {
+            try {
+                if (mPhotoFile != null) {
+                    final Map<String, File> files = new HashMap<String, File>();
+                    files.put("uploadfile", mPhotoFile);
+                    final String response = UploadUtil.uploadpic(requestURL_getpic, files);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -228,7 +257,7 @@ public class RecommendActivity extends AppCompatActivity {
         recmd_txt_tryagain.setVisibility(View.VISIBLE);
         tryagain.setVisibility(View.VISIBLE);
         Bitmap bitmap = toBitmap(mPhotoPath);
-        mImageView.setImageBitmap(bitmap);
+        //mImageView.setImageBitmap(bitmap);
         //设置再来一次的监听
         setTryagainListener();
     }
@@ -263,7 +292,7 @@ public class RecommendActivity extends AppCompatActivity {
             ContentResolver cr = this.getContentResolver();
             try {
                 Bitmap bitmap = BitmapFactory.decodeStream(cr.openInputStream(uri));
-                mImageView.setImageBitmap(bitmap);
+                //mImageView.setImageBitmap(bitmap);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -292,7 +321,8 @@ public class RecommendActivity extends AppCompatActivity {
             try {
                 camera = Camera.open(); // 打开摄像头
                 camera.setPreviewDisplay(holder); // 设置用于显示拍照影像的SurfaceHolder对象
-                camera.setDisplayOrientation(getPreviewDegree(RecommendActivity.this));
+                //camera.setDisplayOrientation(getPreviewDegree(RecommendActivity.this));
+                camera.setDisplayOrientation(90);
                 camera.cancelAutoFocus();// 打开自动对焦
                 camera.startPreview(); // 开始预览
             } catch (Exception e) {

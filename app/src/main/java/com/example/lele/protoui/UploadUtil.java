@@ -115,10 +115,10 @@ public class UploadUtil {
     //直接上传图片的二进制流，不添加边界等条件，因师兄服务器中直接接受图片二进制流。
     public static String uploadpic(String url, Map<String, File> files)
             throws IOException {
-        String BOUNDARY = java.util.UUID.randomUUID().toString();
-        String PREFIX = "--", LINEND = "\r\n";
-        String MULTIPART_FROM_DATA = "multipart/form-data";
-        String CHARSET = "UTF-8";
+        //String BOUNDARY = java.util.UUID.randomUUID().toString();
+        //String PREFIX = "--", LINEND = "\r\n";
+        //String MULTIPART_FROM_DATA = "multipart/form-data";
+        //String CHARSET = "UTF-8";
         URL uri = new URL(url);
         HttpURLConnection conn = (HttpURLConnection) uri.openConnection();
         conn.setReadTimeout(10 * 1000); // 缓存的最长时间
