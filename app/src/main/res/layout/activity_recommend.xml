@@ -164,21 +164,35 @@
                     <FrameLayout
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"></FrameLayout>
+                        android:layout_weight="2"></FrameLayout>
 
                     <ImageView
                         android:id="@+id/recmd_tryagain"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_weight="0.3"
+                        android:layout_weight="1"
                         android:background="@drawable/refresh_2a2a2a"
                         android:visibility="gone" />
 
                     <FrameLayout
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"></FrameLayout>
+                        android:layout_weight="2"></FrameLayout>
+
+                    <ImageView
+                        android:id="@+id/recmd_confirm"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:background="@drawable/upload_button"
+                        android:visibility="gone" />
+
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"></FrameLayout>
                 </LinearLayout>
 
                 <FrameLayout
@@ -186,9 +200,15 @@
                     android:layout_height="0dp"
                     android:layout_weight="3">
 
-                    <RelativeLayout
+                    <LinearLayout
+                        android:orientation="horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
+
+                        <FrameLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="2"></FrameLayout>
 
                         <TextView
                             android:id="@+id/recmd_txt_tryagain"
@@ -199,7 +219,27 @@
                             android:text="重新拍摄"
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:visibility="gone" />
-                    </RelativeLayout>
+
+                        <FrameLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="2"></FrameLayout>
+
+                        <TextView
+                            android:id="@+id/recmd_txt_confirm"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_centerHorizontal="true"
+                            android:text="上传"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:visibility="gone" />
+
+                        <FrameLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="2"></FrameLayout>
+                    </LinearLayout>
                 </FrameLayout>
 
             </LinearLayout>

@@ -11,6 +11,7 @@ import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -21,11 +22,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -38,14 +47,18 @@ public class RecommendActivity extends AppCompatActivity {
     private ImageView upLoadfromCamera;
     private ImageView upLoadfromAlbum;
     private ImageView tryagain;
+    private ImageView confirm;
     private TextView recmd_txt1;
     private TextView recmd_txt2;
     private TextView recmd_txt_tryagain;
+    private TextView recmd_txt_confirm;
 
     //设置浏览本地相册用的变量
     private ImageView mImageView;
     //设置拍照用的变量
     private String mPhotoPath;
+    private String recommend_pic_name;
+    private String[] attr_value;
     private File mPhotoFile;
     public final static int CAMERA_RESULT = 1;
     private Camera camera;
@@ -54,26 +67,11 @@ public class RecommendActivity extends AppCompatActivity {
     Bundle bundle = null; /* 声明一个Bundle对象，用来存储数据 */
     //上传图片
     private static String requestURL_getpic = "http://192.168.1.66:8080/fashion_server/getpic";
+    private static String RECOMMEND_INFOPATH = "http://192.168.1.66:8080/fashion_server/re_returnClothInfo";
+    private static URL url;
     String pic_uri;/* 图片uri */
 
-    //private Handler handler = new Handler() {
-    //    @Override
-    //    public void handleMessage(Message msg) {
-    //        //输入检查
-    //        if (msg.what == 204) {
-    //            try {
-    //                if (mPhotoFile != null) {
-    //                    final Map<String, File> files = new HashMap<String, File>();
-    //                    files.put("uploadfile", mPhotoFile);
-    //                    final String response = UploadUtil.uploadpic(requestURL_getpic, files);
-    //                    Log.v("RecommendAct",response);
-    //                }
-    //            } catch (Exception e) {
-    //                e.printStackTrace();
-    //            }
-    //        }
-    //    }
-    //};
+    Bundle bundle_toUploadPicInfo = new Bundle();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +83,9 @@ public class RecommendActivity extends AppCompatActivity {
         recmd_txt1 = findViewById(R.id.recmd_txt1);
         recmd_txt2 = findViewById(R.id.recmd_txt2);
         recmd_txt_tryagain = findViewById(R.id.recmd_txt_tryagain);
+        recmd_txt_confirm = findViewById(R.id.recmd_txt_confirm);
         tryagain = findViewById(R.id.recmd_tryagain);
+        confirm = findViewById(R.id.recmd_confirm);
 
         //返回--------------------------------------------------------------------------------------
         backBtn = findViewById(R.id.title_bar_back_btn);
@@ -183,27 +183,11 @@ public class RecommendActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-
-                //Message msg = Message.obtain();
-                //msg.what = 204;
-                //handler.sendMessage(msg);
-
                 Toast.makeText(getApplicationContext(), R.string.msg_takephotot, Toast.LENGTH_SHORT).show();
 
                 //开启线程上传图片
                 new upload_pic().start();
-                //new Thread((Runnable) () -> {
-                //    try {
-                //        if (mPhotoFile != null) {
-                //            final Map<String, File> files = new HashMap<String, File>();
-                //            files.put("uploadfile", mPhotoFile);
-                //            final String response = UploadUtil.uploadpic(requestURL_getpic, files);
-                //            //Log.v("RecommendAct",response);
-                //        }
-                //    } catch (Exception e) {
-                //        e.printStackTrace();
-                //    }
-                //});
+
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -223,12 +207,97 @@ public class RecommendActivity extends AppCompatActivity {
                 if (mPhotoFile != null) {
                     final Map<String, File> files = new HashMap<String, File>();
                     files.put("uploadfile", mPhotoFile);
-                    final String response = UploadUtil.uploadpic(requestURL_getpic, files);
+                    //返回值是根据上传图像推荐的相似时尚服装图像
+                    recommend_pic_name = UploadUtil.uploadpic(requestURL_getpic, files);
+                    bundle_toUploadPicInfo.putString("recommend_pic_name",recommend_pic_name);
+                    //获取推荐的到的对应服装信息
+                    downloadclothinfo_recommend();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void downloadclothinfo_recommend() {
+        //开启线程，网络获取对应服装信息
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Map<String, String> map = new HashMap<String, String>();
+                //post方法向服务器传入用户名与索引
+                map.put("recommend_pic_name", recommend_pic_name);
+
+                try{
+                    url = new URL(RECOMMEND_INFOPATH);
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+
+                StringBuilder stringBuilder = new StringBuilder();
+                for (Map.Entry<String, String> entry : map.entrySet()) {
+                    try {
+                        stringBuilder
+                                .append(entry.getKey())
+                                .append("=")
+                                .append(URLEncoder.encode(entry.getValue(), "UTF-8"))
+                                .append("&");
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                }
+                stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+                try {
+                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection.setConnectTimeout(3000);
+                    urlConnection.setRequestMethod("POST"); // 以post请求方式提交
+                    urlConnection.setDoInput(true); // 读取数据
+                    urlConnection.setDoOutput(true); // 向服务器写数据
+                    // 获取上传信息的大小和长度
+                    byte[] myData = stringBuilder.toString().getBytes();
+                    // 设置请求体的类型是文本类型,表示当前提交的是文本数据
+                    urlConnection.setRequestProperty("Content-Type",
+                            "application/x-www-form-urlencoded");
+                    urlConnection.setRequestProperty("Content-Length",
+                            String.valueOf(myData.length));
+                    // 获得输出流，向服务器输出内容
+                    OutputStream outputStream = urlConnection.getOutputStream();
+                    // 写入数据
+                    outputStream.write(myData, 0, myData.length);
+                    outputStream.close();
+                    // 获得服务器响应结果和状态码
+                    int responseCode = urlConnection.getResponseCode();
+                    if (responseCode == 200) {
+                        // 取回响应的结果，推荐服装图像的属性特征数据
+                        String s = changeInputStream(urlConnection.getInputStream(), "UTF-8");
+                        attr_value = s.split(",");
+
+                        bundle_toUploadPicInfo.putStringArray("clothingInfo",attr_value);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    private static String changeInputStream(InputStream inputStream, String encode) {
+        // 内存流
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        byte[] data = new byte[1024];
+        int len = 0;
+        String result = null;
+        if (inputStream != null) {
+            try {
+                while ((len = inputStream.read(data)) != -1) {
+                    byteArrayOutputStream.write(data, 0, len);
+                }
+                result = new String(byteArrayOutputStream.toByteArray(), encode);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
     }
 
     public String getSDPath() {
@@ -255,11 +324,15 @@ public class RecommendActivity extends AppCompatActivity {
         recmd_txt1.setVisibility(View.GONE);
         recmd_txt2.setVisibility(View.GONE);
         recmd_txt_tryagain.setVisibility(View.VISIBLE);
+        recmd_txt_confirm.setVisibility(View.VISIBLE);
         tryagain.setVisibility(View.VISIBLE);
+        confirm.setVisibility(View.VISIBLE);
         Bitmap bitmap = toBitmap(mPhotoPath);
         //mImageView.setImageBitmap(bitmap);
         //设置再来一次的监听
         setTryagainListener();
+        //设置确认上传的监听
+        setConfirmListener();
     }
 
     protected void setTryagainListener() {
@@ -276,6 +349,23 @@ public class RecommendActivity extends AppCompatActivity {
                     tryagain.setVisibility(View.GONE);
                     mPhotoPath = null;
                     camera.startPreview(); // 拍完照后，重新开始预览
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    protected void setConfirmListener() {
+        confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    //转到UploadPicInfoActivity页面
+                    Intent i = new Intent(RecommendActivity.this, UploadPicInfoActivity.class);
+                    bundle_toUploadPicInfo.putString("camera_pic",mPhotoPath);
+                    i.putExtras(bundle_toUploadPicInfo);
+                    startActivity(i);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
