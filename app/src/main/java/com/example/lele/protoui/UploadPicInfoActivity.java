@@ -10,8 +10,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -36,13 +39,16 @@ public class UploadPicInfoActivity extends AppCompatActivity {
     private int score;
     private int flag;
 
-    private String picIndex;
+    private String user_name;
     private String[] attr_value;
     private String upload_pic_name;
     private String recommend_pic_name;
 
     private static String IMAGEPATH = "http://192.168.1.66:8080/fashion_server/getRecommendPic";
+    private static String FEEDBACKPATH = "http://192.168.1.66:8080/fashion_server/getFeedbackLevel2";
     private static URL url;
+
+    Map<String, String> FeedbackData = new HashMap<String, String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +69,7 @@ public class UploadPicInfoActivity extends AppCompatActivity {
         Bundle bundle_fromRecommend = this.getIntent().getExtras();
         upload_pic_name = bundle_fromRecommend.getString("camera_pic");
         recommend_pic_name = bundle_fromRecommend.getString("recommend_pic_name");
+        user_name = bundle_fromRecommend.getString("userName");
         attr_value = bundle_fromRecommend.getStringArray("clothingInfo");
         if(attr_value == null) {
             Intent i = new Intent(UploadPicInfoActivity.this, LoginActivity.class);
@@ -200,7 +207,7 @@ public class UploadPicInfoActivity extends AppCompatActivity {
         downloadphoto();
 
         //用户评分----------------------------------------------------------------------------------
-        //score = UserScore();
+        score = UserScore();
     }
 
     private void downloadphoto() {
@@ -283,6 +290,190 @@ public class UploadPicInfoActivity extends AppCompatActivity {
 
                 //mSimpleAdapter.notifyDataSetChanged();
             }
+            if (msg.what == 204) {
+                String s = (String) msg.obj;
+                //Toast.makeText(LoginActivity.this,s,Toast.LENGTH_LONG).show();
+                if (s.contains("server: update database successfully")) {
+                    Toast.makeText(UploadPicInfoActivity.this, s, Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(UploadPicInfoActivity.this, s, Toast.LENGTH_LONG).show();
+                }
+            }
         }
     };
+
+    private int UserScore() {
+        text = findViewById(R.id.textView4);
+        feel_love = findViewById(R.id.feel_love);
+        feel_like = findViewById(R.id.feel_like);
+        feel_soso = findViewById(R.id.feel_soso);
+        feel_dislike = findViewById(R.id.feel_dislike);
+        stamp = findViewById(R.id.stamp);
+        score = 0;
+        //监听
+        View.OnClickListener listener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String feedbackLevel = "level3";
+                switch (v.getId()) {
+                    case R.id.feel_love:
+                        score = 0;
+                        text.setText("Love");
+                        stamp.setVisibility(View.VISIBLE);
+                        feel_love.setBackgroundResource(R.drawable.heart_2a2a2a);
+                        if (flag == 1) {
+                            score = -1;
+                            text.setText("Unset");
+                            feel_love.setBackgroundResource(R.drawable.heart2_2a2a2a);
+                            stamp.setVisibility(View.INVISIBLE);
+                            flag = 0;
+                        } else flag = 1;
+                        feel_like.setBackgroundResource(R.drawable.smile_2a2a2a);
+                        feel_soso.setBackgroundResource(R.drawable.meh_2a2a2a);
+                        feel_dislike.setBackgroundResource(R.drawable.frown_2a2a2a);
+                        stamp.setBackgroundResource(R.drawable.stamp_love);
+                        feedbackLevel = "level1";
+                        break;
+                    case R.id.feel_like:
+                        score = 1;
+                        text.setText("Like");
+                        stamp.setVisibility(View.VISIBLE);
+                        feel_like.setBackgroundResource(R.drawable.smile2_2a2a2a);
+                        if (flag == 2) {
+                            score = -1;
+                            text.setText("Unset");
+                            feel_like.setBackgroundResource(R.drawable.smile_2a2a2a);
+                            stamp.setVisibility(View.INVISIBLE);
+                            flag = 0;
+                        } else flag = 2;
+                        feel_love.setBackgroundResource(R.drawable.heart2_2a2a2a);
+                        feel_soso.setBackgroundResource(R.drawable.meh_2a2a2a);
+                        feel_dislike.setBackgroundResource(R.drawable.frown_2a2a2a);
+                        stamp.setBackgroundResource(R.drawable.stamp_like);
+                        feedbackLevel = "level2";
+                        break;
+                    case R.id.feel_soso:
+                        score = 2;
+                        text.setText("Soso");
+                        stamp.setVisibility(View.VISIBLE);
+                        feel_soso.setBackgroundResource(R.drawable.meh2_2a2a2a);
+                        if (flag == 3) {
+                            score = -1;
+                            text.setText("Unset");
+                            feel_soso.setBackgroundResource(R.drawable.meh_2a2a2a);
+                            stamp.setVisibility(View.INVISIBLE);
+                            flag = 0;
+                        } else flag = 3;
+                        feel_love.setBackgroundResource(R.drawable.heart2_2a2a2a);
+                        feel_like.setBackgroundResource(R.drawable.smile_2a2a2a);
+                        feel_dislike.setBackgroundResource(R.drawable.frown_2a2a2a);
+                        stamp.setBackgroundResource(R.drawable.stamp_soso);
+                        feedbackLevel = "level3";
+                        break;
+                    case R.id.feel_dislike:
+                        score = 3;
+                        text.setText("Dislike");
+                        feel_dislike.setBackgroundResource(R.drawable.frown2_2a2a2a);
+                        stamp.setVisibility(View.VISIBLE);
+                        if (flag == 4) {
+                            score = -1;
+                            text.setText("Unset");
+                            feel_dislike.setBackgroundResource(R.drawable.frown_2a2a2a);
+                            stamp.setVisibility(View.INVISIBLE);
+                            flag = 0;
+                        } else flag = 4;
+                        feel_love.setBackgroundResource(R.drawable.heart2_2a2a2a);
+                        feel_like.setBackgroundResource(R.drawable.smile_2a2a2a);
+                        feel_soso.setBackgroundResource(R.drawable.meh_2a2a2a);
+                        stamp.setBackgroundResource(R.drawable.stamp_dislike);
+                        feedbackLevel = "level4";
+                        break;
+                }
+                //上传反馈信息
+                FeedbackData.put("username", user_name);
+                FeedbackData.put("picname",recommend_pic_name);
+                FeedbackData.put("feedbackLevel", feedbackLevel);
+                new feedback2().start();
+                //finish();
+            }
+        };
+        feel_love.setOnClickListener(listener);
+        feel_like.setOnClickListener(listener);
+        feel_soso.setOnClickListener(listener);
+        feel_dislike.setOnClickListener(listener);
+        //返回分数
+        return score;
+    }
+
+    private class feedback2 extends Thread {
+        public void run() {
+            try {
+                url = new URL(FEEDBACKPATH);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+            StringBuilder stringBuilder = new StringBuilder();
+            for (Map.Entry<String, String> entry : FeedbackData.entrySet()) {
+                try {
+                    stringBuilder
+                            .append(entry.getKey())
+                            .append("=")
+                            .append(URLEncoder.encode(entry.getValue(), "UTF-8"))
+                            .append("&");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            }
+            stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+            try {
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setConnectTimeout(3000);
+                urlConnection.setRequestMethod("POST"); // 以post请求方式提交
+                urlConnection.setDoInput(true); // 读取数据
+                urlConnection.setDoOutput(true); // 向服务器写数据
+                // 获取上传信息的大小和长度
+                byte[] myData = stringBuilder.toString().getBytes();
+                // 设置请求体的类型是文本类型,表示当前提交的是文本数据
+                urlConnection.setRequestProperty("Content-Type",
+                        "application/x-www-form-urlencoded");
+                urlConnection.setRequestProperty("Content-Length",
+                        String.valueOf(myData.length));
+                // 获得输出流，向服务器输出内容
+                OutputStream outputStream = urlConnection.getOutputStream();
+                // 写入数据
+                outputStream.write(myData, 0, myData.length);
+                outputStream.close();
+                // 获得服务器响应结果和状态码
+                int responseCode = urlConnection.getResponseCode();
+                if (responseCode == 200) {
+                    // 取回响应的结果
+                    Message msg = Message.obtain();
+                    msg.what = 204;
+                    msg.obj = changeInputStream(urlConnection.getInputStream(), "UTF-8");
+                    handler.sendMessage(msg);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static String changeInputStream(InputStream inputStream, String encode) {
+        // 内存流
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        byte[] data = new byte[1024];
+        int len = 0;
+        String result = null;
+        if (inputStream != null) {
+            try {
+                while ((len = inputStream.read(data)) != -1) {
+                    byteArrayOutputStream.write(data, 0, len);
+                }
+                result = new String(byteArrayOutputStream.toByteArray(), encode);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
+    }
 }

@@ -448,7 +448,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
         if (id == R.id.nav_camera) {
             // 拍一拍
+            Bundle bundle_toRecommend = new Bundle();
+            bundle_toRecommend.putString("userName",userName);
             Intent i = new Intent(MainActivity.this, RecommendActivity.class);
+            i.putExtras(bundle_toRecommend);
             startActivity(i);
         } else if (id == R.id.nav_setting) {
             // 偏好设置

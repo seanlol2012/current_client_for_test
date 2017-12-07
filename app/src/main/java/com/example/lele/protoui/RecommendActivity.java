@@ -58,6 +58,7 @@ public class RecommendActivity extends AppCompatActivity {
     //设置拍照用的变量
     private String mPhotoPath;
     private String recommend_pic_name;
+    private String user_name;
     private String[] attr_value;
     private File mPhotoFile;
     public final static int CAMERA_RESULT = 1;
@@ -109,6 +110,9 @@ public class RecommendActivity extends AppCompatActivity {
         surfaceView.getHolder().setFixedSize(800, 600); //设置Surface分辨率
         surfaceView.getHolder().setKeepScreenOn(true);// 屏幕常亮
         surfaceView.getHolder().addCallback(new SurfaceCallback());//为SurfaceView的句柄添加一个回调函数
+
+        Bundle bundle_fromMain = this.getIntent().getExtras();
+        user_name = bundle_fromMain.getString("userName");
     }
 
     protected void setCameraListener() {
@@ -364,6 +368,7 @@ public class RecommendActivity extends AppCompatActivity {
                     //转到UploadPicInfoActivity页面
                     Intent i = new Intent(RecommendActivity.this, UploadPicInfoActivity.class);
                     bundle_toUploadPicInfo.putString("camera_pic",mPhotoPath);
+                    bundle_toUploadPicInfo.putString("userName",user_name);
                     i.putExtras(bundle_toUploadPicInfo);
                     startActivity(i);
                 } catch (Exception e) {

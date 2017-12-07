@@ -392,7 +392,6 @@ public class ClothInfoActivity extends AppCompatActivity {
                 FeedbackData.put("picindex",picIndex);
                 FeedbackData.put("feedbackLevel", feedbackLevel);
                 new feedback().start();
-
                 finish();
             }
         };
