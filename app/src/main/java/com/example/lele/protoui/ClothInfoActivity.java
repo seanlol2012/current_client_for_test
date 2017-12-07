@@ -1,5 +1,6 @@
 package com.example.lele.protoui;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -9,8 +10,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -43,7 +47,10 @@ public class ClothInfoActivity extends AppCompatActivity {
     private String user_name;
 
     private static String IMAGEPATH = "http://192.168.1.66:8080/fashion_server/recommendPic";
+    private static String FEEDBACKPATH = "http://192.168.1.66:8080/fashion_server/getFeedbackLevel";
     private static URL url;
+
+    Map<String, String> FeedbackData = new HashMap<String, String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -281,6 +288,15 @@ public class ClothInfoActivity extends AppCompatActivity {
 
                 //mSimpleAdapter.notifyDataSetChanged();
             }
+            if (msg.what == 204) {
+                String s = (String) msg.obj;
+                //Toast.makeText(LoginActivity.this,s,Toast.LENGTH_LONG).show();
+                if (s.contains("server: update database successfully")) {
+                    Toast.makeText(ClothInfoActivity.this, s, Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(ClothInfoActivity.this, s, Toast.LENGTH_LONG).show();
+                }
+            }
         }
     };
 
@@ -296,6 +312,7 @@ public class ClothInfoActivity extends AppCompatActivity {
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String feedbackLevel = "level3";
                 switch (v.getId()) {
                     case id.feel_love:
                         score = 0;
@@ -313,6 +330,7 @@ public class ClothInfoActivity extends AppCompatActivity {
                         feel_soso.setBackgroundResource(R.drawable.meh_2a2a2a);
                         feel_dislike.setBackgroundResource(R.drawable.frown_2a2a2a);
                         stamp.setBackgroundResource(R.drawable.stamp_love);
+                        feedbackLevel = "level1";
                         break;
                     case id.feel_like:
                         score = 1;
@@ -330,6 +348,7 @@ public class ClothInfoActivity extends AppCompatActivity {
                         feel_soso.setBackgroundResource(R.drawable.meh_2a2a2a);
                         feel_dislike.setBackgroundResource(R.drawable.frown_2a2a2a);
                         stamp.setBackgroundResource(R.drawable.stamp_like);
+                        feedbackLevel = "level2";
                         break;
                     case id.feel_soso:
                         score = 2;
@@ -347,6 +366,7 @@ public class ClothInfoActivity extends AppCompatActivity {
                         feel_like.setBackgroundResource(R.drawable.smile_2a2a2a);
                         feel_dislike.setBackgroundResource(R.drawable.frown_2a2a2a);
                         stamp.setBackgroundResource(R.drawable.stamp_soso);
+                        feedbackLevel = "level3";
                         break;
                     case id.feel_dislike:
                         score = 3;
@@ -364,8 +384,16 @@ public class ClothInfoActivity extends AppCompatActivity {
                         feel_like.setBackgroundResource(R.drawable.smile_2a2a2a);
                         feel_soso.setBackgroundResource(R.drawable.meh_2a2a2a);
                         stamp.setBackgroundResource(R.drawable.stamp_dislike);
+                        feedbackLevel = "level4";
                         break;
                 }
+                //上传反馈信息
+                FeedbackData.put("username", user_name);
+                FeedbackData.put("picindex",picIndex);
+                FeedbackData.put("feedbackLevel", feedbackLevel);
+                new feedback().start();
+
+                finish();
             }
         };
         feel_love.setOnClickListener(listener);
@@ -374,5 +402,77 @@ public class ClothInfoActivity extends AppCompatActivity {
         feel_dislike.setOnClickListener(listener);
         //返回分数
         return score;
+    }
+
+    private class feedback extends Thread {
+        public void run() {
+            try {
+                url = new URL(FEEDBACKPATH);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+            StringBuilder stringBuilder = new StringBuilder();
+            for (Map.Entry<String, String> entry : FeedbackData.entrySet()) {
+                try {
+                    stringBuilder
+                            .append(entry.getKey())
+                            .append("=")
+                            .append(URLEncoder.encode(entry.getValue(), "UTF-8"))
+                            .append("&");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            }
+            stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+            try {
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setConnectTimeout(3000);
+                urlConnection.setRequestMethod("POST"); // 以post请求方式提交
+                urlConnection.setDoInput(true); // 读取数据
+                urlConnection.setDoOutput(true); // 向服务器写数据
+                // 获取上传信息的大小和长度
+                byte[] myData = stringBuilder.toString().getBytes();
+                // 设置请求体的类型是文本类型,表示当前提交的是文本数据
+                urlConnection.setRequestProperty("Content-Type",
+                        "application/x-www-form-urlencoded");
+                urlConnection.setRequestProperty("Content-Length",
+                        String.valueOf(myData.length));
+                // 获得输出流，向服务器输出内容
+                OutputStream outputStream = urlConnection.getOutputStream();
+                // 写入数据
+                outputStream.write(myData, 0, myData.length);
+                outputStream.close();
+                // 获得服务器响应结果和状态码
+                int responseCode = urlConnection.getResponseCode();
+                if (responseCode == 200) {
+                    // 取回响应的结果
+                    Message msg = Message.obtain();
+                    msg.what = 204;
+                    msg.obj = changeInputStream(urlConnection.getInputStream(), "UTF-8");
+                    handler.sendMessage(msg);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static String changeInputStream(InputStream inputStream, String encode) {
+        // 内存流
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        byte[] data = new byte[1024];
+        int len = 0;
+        String result = null;
+        if (inputStream != null) {
+            try {
+                while ((len = inputStream.read(data)) != -1) {
+                    byteArrayOutputStream.write(data, 0, len);
+                }
+                result = new String(byteArrayOutputStream.toByteArray(), encode);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
     }
 }

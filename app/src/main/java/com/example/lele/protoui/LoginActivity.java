@@ -139,7 +139,7 @@ public class LoginActivity extends AppCompatActivity {
         return false;
     }
 
-    class login extends Thread {
+    private class login extends Thread {
         public void run() {
             try {
                 url = new URL(PATH);
