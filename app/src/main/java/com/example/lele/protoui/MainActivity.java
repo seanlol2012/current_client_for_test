@@ -326,7 +326,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         // 获得服务器响应结果和状态码
                         int responseCode = urlConnection.getResponseCode();
                         if (responseCode == 200) {
-                            Bitmap bitmap = BitmapFactory.decodeStream(urlConnection.getInputStream());
+                            BitmapFactory.Options options = new BitmapFactory.Options();
+                            //options.inJustDecodeBounds = true;
+                            options.inSampleSize = 4;
+                            Bitmap bitmap = BitmapFactory.decodeStream(urlConnection.getInputStream(), null, options);
                             bm[i]=bitmap;
                         }
                     }catch (IOException e) {

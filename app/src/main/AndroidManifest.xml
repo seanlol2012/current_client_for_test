@@ -33,7 +33,8 @@
         <activity android:name=".RegisterActivity" />
         <activity android:name=".InitiateActivity" />
         <activity android:name=".SettingActivity" />
-        <activity android:name=".UploadPicInfoActivity"></activity>
+        <activity android:name=".UploadPicInfoActivity" />
+        <activity android:name=".WordsRecommendActivity"></activity>
     </application>
 
 </manifest>
