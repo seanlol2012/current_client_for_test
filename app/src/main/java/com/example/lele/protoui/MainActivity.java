@@ -456,6 +456,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Intent i = new Intent(MainActivity.this, RecommendActivity.class);
             i.putExtras(bundle_toRecommend);
             startActivity(i);
+        } else if (id == R.id.nav_words) {
+            //定向推荐
+            Intent i = new Intent(MainActivity.this, WordsRecommendActivity.class);
+            startActivity(i);
         } else if (id == R.id.nav_setting) {
             // 偏好设置
             Intent i = new Intent(MainActivity.this, SettingActivity.class);

@@ -7,6 +7,10 @@
             android:icon="@drawable/camera_2a2a2a"
             android:title="拍一拍" />
         <item
+            android:id="@+id/nav_words"
+            android:icon="@drawable/setting_2a2a2a"
+            android:title="定向推荐" />
+        <item
             android:id="@+id/nav_setting"
             android:icon="@drawable/setting_2a2a2a"
             android:title="偏好设置" />
