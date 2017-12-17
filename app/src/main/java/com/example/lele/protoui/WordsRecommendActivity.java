@@ -1,6 +1,8 @@
 package com.example.lele.protoui;
 
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -11,8 +13,19 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class WordsRecommendActivity extends AppCompatActivity {
 
@@ -42,6 +55,32 @@ public class WordsRecommendActivity extends AppCompatActivity {
     private TextView confirmbtn;
 
     private String length_value, sleeve_value, collar_value, model_value, pattern_value;
+
+    private static String INFOPATH2 = "http://192.168.1.66:8080/fashion_server/returnClothInfo2";
+    private static URL url;
+
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what == 205) {
+                String s = (String) msg.obj;
+                String[] attr_value = s.split(",");
+
+                Bundle bundle_toClothInfo2 = new Bundle();
+
+                bundle_toClothInfo2.putString("length_value",length_value);
+                bundle_toClothInfo2.putString("sleeve_value",sleeve_value);
+                bundle_toClothInfo2.putString("collar_value",collar_value);
+                bundle_toClothInfo2.putString("model_value",model_value);
+                bundle_toClothInfo2.putString("pattern_value",pattern_value);
+                bundle_toClothInfo2.putStringArray("clothingInfo",attr_value);
+
+                Intent i = new Intent(WordsRecommendActivity.this, ClothInfo2Activity.class);
+                i.putExtras(bundle_toClothInfo2);
+                startActivity(i);
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -251,9 +290,93 @@ public class WordsRecommendActivity extends AppCompatActivity {
         confirmbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(WordsRecommendActivity.this, ClothInfo2Activity.class);
-                startActivity(i);
+                downloadclothinfo();
             }
         });
+    }
+
+    private void downloadclothinfo() {
+        //开启线程，网络获取对应服装信息
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Map<String, String> map = new HashMap<String, String>();
+                //post方法向服务器传入用户名与索引
+                map.put("length_value", length_value);
+                map.put("sleeve_value", sleeve_value);
+                map.put("collar_value", collar_value);
+                map.put("model_value", model_value);
+                map.put("pattern_value", pattern_value);
+
+                try{
+                    url = new URL(INFOPATH2);
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+
+                StringBuilder stringBuilder = new StringBuilder();
+                for (Map.Entry<String, String> entry : map.entrySet()) {
+                    try {
+                        stringBuilder
+                                .append(entry.getKey())
+                                .append("=")
+                                .append(URLEncoder.encode(entry.getValue(), "UTF-8"))
+                                .append("&");
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                }
+                stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+                try {
+                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection.setConnectTimeout(3000);
+                    urlConnection.setRequestMethod("POST"); // 以post请求方式提交
+                    urlConnection.setDoInput(true); // 读取数据
+                    urlConnection.setDoOutput(true); // 向服务器写数据
+                    // 获取上传信息的大小和长度
+                    byte[] myData = stringBuilder.toString().getBytes();
+                    // 设置请求体的类型是文本类型,表示当前提交的是文本数据
+                    urlConnection.setRequestProperty("Content-Type",
+                            "application/x-www-form-urlencoded");
+                    urlConnection.setRequestProperty("Content-Length",
+                            String.valueOf(myData.length));
+                    // 获得输出流，向服务器输出内容
+                    OutputStream outputStream = urlConnection.getOutputStream();
+                    // 写入数据
+                    outputStream.write(myData, 0, myData.length);
+                    outputStream.close();
+                    // 获得服务器响应结果和状态码
+                    int responseCode = urlConnection.getResponseCode();
+                    if (responseCode == 200) {
+                        // 取回响应的结果
+                        Message msg = Message.obtain();
+                        msg.what = 205;
+                        msg.obj = changeInputStream(urlConnection.getInputStream(), "UTF-8");
+                        handler.sendMessage(msg);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    private static String changeInputStream(InputStream inputStream, String encode) {
+        // 内存流
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        byte[] data = new byte[1024];
+        int len = 0;
+        String result = null;
+        if (inputStream != null) {
+            try {
+                while ((len = inputStream.read(data)) != -1) {
+                    byteArrayOutputStream.write(data, 0, len);
+                }
+                result = new String(byteArrayOutputStream.toByteArray(), encode);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
     }
 }
