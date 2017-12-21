@@ -350,7 +350,9 @@ public class RecommendActivity extends AppCompatActivity {
                     recmd_txt1.setVisibility(View.VISIBLE);
                     recmd_txt2.setVisibility(View.VISIBLE);
                     recmd_txt_tryagain.setVisibility(View.GONE);
+                    recmd_txt_confirm.setVisibility(View.GONE);
                     tryagain.setVisibility(View.GONE);
+                    confirm.setVisibility(View.GONE);
                     mPhotoPath = null;
                     camera.startPreview(); // 拍完照后，重新开始预览
                 } catch (Exception e) {

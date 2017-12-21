@@ -11,7 +11,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -55,6 +54,7 @@ public class WordsRecommendActivity extends AppCompatActivity {
     private TextView confirmbtn;
 
     private String length_value, sleeve_value, collar_value, model_value, pattern_value;
+    private String user_name;
 
     private static String INFOPATH2 = "http://192.168.1.66:8080/fashion_server/returnClothInfo2";
     private static URL url;
@@ -68,6 +68,7 @@ public class WordsRecommendActivity extends AppCompatActivity {
 
                 Bundle bundle_toClothInfo2 = new Bundle();
 
+                bundle_toClothInfo2.putString("user_name",user_name);
                 bundle_toClothInfo2.putString("length_value",length_value);
                 bundle_toClothInfo2.putString("sleeve_value",sleeve_value);
                 bundle_toClothInfo2.putString("collar_value",collar_value);
@@ -105,6 +106,10 @@ public class WordsRecommendActivity extends AppCompatActivity {
         collar_value = "null";
         model_value = "null";
         pattern_value = "null";
+
+        //获取上一页面传送的信息
+        Bundle bundle_fromMain = this.getIntent().getExtras();
+        user_name = bundle_fromMain.getString("userName");
 
         //处理Spinner控件
         lengthSpinner = (Spinner)super.findViewById(R.id.lengthSpinner);

@@ -458,7 +458,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startActivity(i);
         } else if (id == R.id.nav_words) {
             //定向推荐
+            Bundle bundle_toWordsRecommend = new Bundle();
+            bundle_toWordsRecommend.putString("userName",userName);
             Intent i = new Intent(MainActivity.this, WordsRecommendActivity.class);
+            i.putExtras(bundle_toWordsRecommend);
             startActivity(i);
         } else if (id == R.id.nav_setting) {
             // 偏好设置
