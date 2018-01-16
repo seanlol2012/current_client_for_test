@@ -35,7 +35,8 @@
         <activity android:name=".SettingActivity" />
         <activity android:name=".UploadPicInfoActivity" />
         <activity android:name=".WordsRecommendActivity" />
-        <activity android:name=".ClothInfo2Activity"></activity>
+        <activity android:name=".ClothInfo2Activity" />
+        <activity android:name=".BuildModelActivity"></activity>
     </application>
 
 </manifest>
