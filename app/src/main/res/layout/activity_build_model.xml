@@ -83,4 +83,13 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
+    <Button
+        android:id="@+id/getRecommend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/option_index"
+        android:layout_alignRight="@+id/option_index"
+        android:layout_alignTop="@+id/modifybtn"
+        android:text="开始推荐" />
+
 </RelativeLayout>

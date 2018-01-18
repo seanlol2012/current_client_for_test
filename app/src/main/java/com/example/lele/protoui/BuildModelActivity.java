@@ -29,14 +29,17 @@ public class BuildModelActivity extends AppCompatActivity {
     private String question_index_str;
     private String option_index_str;
     private Button upload_information;
+    private Button get_recommend;
 
     private String pic_name;
     private String user_name;
 
     private static String FEEDBACKPATH = "http://192.168.1.66:8080/fashion_server/getFeedbackLevel2";
+    private static String FEEDBACKPATH2 = "http://192.168.1.66:8080/fashion_server/getPicFromPersonalModel";
     private static URL url;
 
     Map<String, String> FeedbackData = new HashMap<String, String>();
+    Map<String, String> FeedbackData2 = new HashMap<String, String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,7 @@ public class BuildModelActivity extends AppCompatActivity {
 
         username = findViewById(R.id.username);
         upload_information = findViewById(R.id.modifybtn);
+        get_recommend = findViewById(R.id.getRecommend);
         question_index = findViewById(R.id.question_index);
         option_index = findViewById(R.id.option_index);
 
@@ -241,6 +245,16 @@ public class BuildModelActivity extends AppCompatActivity {
                 new BuildModelActivity.feedback2().start();
             }
         });
+
+        get_recommend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                user_name = username.getText().toString();
+
+                FeedbackData2.put("username", user_name);
+                new BuildModelActivity.feedback3().start();
+            }
+        });
     }
 
     private class feedback2 extends Thread {
@@ -252,6 +266,59 @@ public class BuildModelActivity extends AppCompatActivity {
             }
             StringBuilder stringBuilder = new StringBuilder();
             for (Map.Entry<String, String> entry : FeedbackData.entrySet()) {
+                try {
+                    stringBuilder
+                            .append(entry.getKey())
+                            .append("=")
+                            .append(URLEncoder.encode(entry.getValue(), "UTF-8"))
+                            .append("&");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            }
+            stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+            try {
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setConnectTimeout(3000);
+                urlConnection.setRequestMethod("POST"); // 以post请求方式提交
+                urlConnection.setDoInput(true); // 读取数据
+                urlConnection.setDoOutput(true); // 向服务器写数据
+                // 获取上传信息的大小和长度
+                byte[] myData = stringBuilder.toString().getBytes();
+                // 设置请求体的类型是文本类型,表示当前提交的是文本数据
+                urlConnection.setRequestProperty("Content-Type",
+                        "application/x-www-form-urlencoded");
+                urlConnection.setRequestProperty("Content-Length",
+                        String.valueOf(myData.length));
+                // 获得输出流，向服务器输出内容
+                OutputStream outputStream = urlConnection.getOutputStream();
+                // 写入数据
+                outputStream.write(myData, 0, myData.length);
+                outputStream.close();
+                // 获得服务器响应结果和状态码
+                int responseCode = urlConnection.getResponseCode();
+                if (responseCode == 200) {
+                    // 取回响应的结果
+                    Message msg = Message.obtain();
+                    msg.what = 204;
+                    msg.obj = changeInputStream(urlConnection.getInputStream(), "UTF-8");
+                    handler.sendMessage(msg);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private class feedback3 extends Thread {
+        public void run() {
+            try {
+                url = new URL(FEEDBACKPATH2);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+            StringBuilder stringBuilder = new StringBuilder();
+            for (Map.Entry<String, String> entry : FeedbackData2.entrySet()) {
                 try {
                     stringBuilder
                             .append(entry.getKey())

@@ -115,13 +115,13 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
-        //visitorbtn.setOnClickListener(new View.OnClickListener() {
-        //    @Override
-        //    public void onClick(View v) {
-        //        Intent i = new Intent(LoginActivity.this, BuildModelActivity.class);
-        //        startActivity(i);
-        //    }
-        //});
+        visitorbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(LoginActivity.this, BuildModelActivity.class);
+                startActivity(i);
+            }
+        });
     }
 
     private boolean loginCheck() {
