@@ -94,7 +94,7 @@ public class InitiateActivity extends AppCompatActivity {
                         builder.setPositiveButton(R.string.AlertDialog_yes, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Intent i = new Intent(InitiateActivity.this, MainActivity.class);
+                                Intent i = new Intent(InitiateActivity.this, LoginActivity.class);
                                 startActivity(i);
                                 finish();
                             }
@@ -353,9 +353,9 @@ public class InitiateActivity extends AppCompatActivity {
 
                         sharedPrefsUtil.savePreferences(InitiateActivity.this, "DataBase", UploadData);
 
-                        //进入主界面
+                        //进入登录页面
                         Toast.makeText(InitiateActivity.this, R.string.init_succeed, Toast.LENGTH_SHORT).show();
-                        Intent i = new Intent(InitiateActivity.this, MainActivity.class);
+                        Intent i = new Intent(InitiateActivity.this, LoginActivity.class);
                         startActivity(i);
                         finish();
                         break;
